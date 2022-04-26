@@ -9,7 +9,8 @@ import TrackCreateScreen from "./src/screens/TrackCreateScreen";
 import AccountScreen from "./src/screens/AccountScreen";
 import TrackListScreen from "./src/screens/TrackListScreen";
 import TrackDetailScreen from "./src/screens/TrackDetailScreen";
-import {Provider as AuthProvider} from "./src/context/AuthContext";
+import {Provider as AuthProvider, Context as AuthContext} from "./src/context/AuthContext";
+import React, {useContext} from "react";
 
 const MainStack = createStackNavigator();
 const TrackStack = createStackNavigator();
@@ -26,40 +27,46 @@ function TrackListFlow() {
 
 function MainFlow() {
     return (
-        <Tab.Navigator screenOptions={{
+        <Tab.Navigator initialRouteName="trackListFlow" screenOptions={{
             headerShown: false,
         }}>
+            <Tab.Screen name="trackListFlow" component={TrackListFlow}/>
             <Tab.Screen name="TrackCreate" component={TrackCreateScreen}/>
             <Tab.Screen name="Account" component={AccountScreen}/>
-            <Tab.Screen name="trackListFlow" component={TrackListFlow}/>
         </Tab.Navigator>
     );
 }
 
+function Wrapper() {
+    const {state, tryLocalSignin} = useContext(AuthContext);
+    React.useEffect(tryLocalSignin, []);
+
+    return (
+        <SafeAreaProvider>
+            <NavigationContainer>
+                <MainStack.Navigator screenOptions={{
+                    headerShown: false,
+                }}>
+                    {state.token ? (
+                        <>
+                            <MainStack.Screen name="mainFlow" component={MainFlow}/>
+                        </>
+                    ) : (
+                        <>
+                            <MainStack.Screen name="Signup" component={SignupScreen}/>
+                            <MainStack.Screen name="Signin" component={SigninScreen}/>
+                        </>
+                    )}
+                </MainStack.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
+    );
+}
+
 export default function App() {
-    let isSignedIn = false;
     return (
         <AuthProvider>
-            <SafeAreaProvider>
-                <NavigationContainer>
-                    <MainStack.Navigator>
-                        {isSignedIn ? (
-                            <>
-                                <MainStack.Screen options={{
-                                    headerShown: false,
-                                }} name="mainFlow" component={MainFlow}/>
-                            </>
-                        ) : (
-                            <>
-                                <MainStack.Screen options={{
-                                    headerShown: false,
-                                }} name="Signup" component={SignupScreen}/>
-                                <MainStack.Screen name="Signin" component={SigninScreen}/>
-                            </>
-                        )}
-                    </MainStack.Navigator>
-                </NavigationContainer>
-            </SafeAreaProvider>
+            <Wrapper />
         </AuthProvider>
     );
 }
