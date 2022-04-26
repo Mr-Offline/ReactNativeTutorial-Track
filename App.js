@@ -9,6 +9,7 @@ import TrackCreateScreen from "./src/screens/TrackCreateScreen";
 import AccountScreen from "./src/screens/AccountScreen";
 import TrackListScreen from "./src/screens/TrackListScreen";
 import TrackDetailScreen from "./src/screens/TrackDetailScreen";
+import {Provider as AuthProvider} from "./src/context/AuthContext";
 
 const MainStack = createStackNavigator();
 const TrackStack = createStackNavigator();
@@ -38,23 +39,27 @@ function MainFlow() {
 export default function App() {
     let isSignedIn = false;
     return (
-        <SafeAreaProvider>
-            <NavigationContainer>
-                <MainStack.Navigator>
-                    {isSignedIn ? (
-                        <>
-                            <MainStack.Screen options={{
-                                headerShown: false,
-                            }} name="mainFlow" component={MainFlow}/>
-                        </>
-                    ) : (
-                        <>
-                            <MainStack.Screen name="Signup" component={SignupScreen}/>
-                            <MainStack.Screen name="Signin" component={SigninScreen}/>
-                        </>
-                    )}
-                </MainStack.Navigator>
-            </NavigationContainer>
-        </SafeAreaProvider>
+        <AuthProvider>
+            <SafeAreaProvider>
+                <NavigationContainer>
+                    <MainStack.Navigator>
+                        {isSignedIn ? (
+                            <>
+                                <MainStack.Screen options={{
+                                    headerShown: false,
+                                }} name="mainFlow" component={MainFlow}/>
+                            </>
+                        ) : (
+                            <>
+                                <MainStack.Screen options={{
+                                    headerShown: false,
+                                }} name="Signup" component={SignupScreen}/>
+                                <MainStack.Screen name="Signin" component={SigninScreen}/>
+                            </>
+                        )}
+                    </MainStack.Navigator>
+                </NavigationContainer>
+            </SafeAreaProvider>
+        </AuthProvider>
     );
 }
