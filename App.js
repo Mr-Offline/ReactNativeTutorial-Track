@@ -10,6 +10,7 @@ import AccountScreen from "./src/screens/AccountScreen";
 import TrackListScreen from "./src/screens/TrackListScreen";
 import TrackDetailScreen from "./src/screens/TrackDetailScreen";
 import {Provider as AuthProvider, Context as AuthContext} from "./src/context/AuthContext";
+import {Provider as LocationProvider, Context as LocationContext} from "./src/context/LocationContext";
 import React, {useContext} from "react";
 
 const MainStack = createStackNavigator();
@@ -65,8 +66,10 @@ function Wrapper() {
 
 export default function App() {
     return (
-        <AuthProvider>
-            <Wrapper />
-        </AuthProvider>
+        <LocationProvider>
+            <AuthProvider>
+                <Wrapper/>
+            </AuthProvider>
+        </LocationProvider>
     );
 }
